@@ -30,11 +30,11 @@ def rational_function(z, poles, residues, offset=0, poly_coeff=()):
     if len(poles) != len(residues):
         raise ValueError("Number of poles not equal to number of residues")
 
-    if poly_coeff == ():
-        poly_order = int(0)
-        # print("The rational_function function was not given an entire polynomial part to build.")
-    else:
-        poly_order = int(poly_coeff.shape[0])
+#    if poly_coeff == ():
+#        poly_order = int(0)
+#        # print("The rational_function function was not given an entire polynomial part to build.")
+#    else:
+#        poly_order = int(poly_coeff.shape[0])
 
     total_function = np.zeros(len(z), dtype='complex128')
     for i, value in enumerate(z):
@@ -43,7 +43,7 @@ def rational_function(z, poles, residues, offset=0, poly_coeff=()):
         total_function[i] = rational_part + entire_part
 
     return total_function
-
+    
 
 def random_poles(n, ranges):
     """
@@ -105,20 +105,38 @@ def load_data(path):
               
     
 def generate_true_data(path, X, Y, poles, residues, entire_coefficients=(), offset=0):
+    """
+    Function generates figures and data files from a space of real and
+    imaginary values to a specified path. Returns real data
+    """
+    
     Z = complex_mesh(X,Y)
 
-    complex_data = rational_function(Z, poles, residues)
+    complex_data = rational_function(Z, poles, residues, offset, entire_coefficients)
     #noised_data = toy_data + np.random.normal(0, 2, len(toy_data))
-
-    save_data(path, poles, residues, X, Y, complex_data)
-
+    
+    real_data = rational_function(X, poles, residues, offset, entire_coefficients)
+    real_data = real_data.real
+    
+    save_data(path, poles, residues, X, Y, real_data)
+    
     plot_3d = rmm_plot.plot_poles(X, Y, complex_data)
     plot_3d.savefig(path + '/plots/3d_poles.svg')
-    
-    real_data = rational_function(X, poles, residues)
-    real_data = real_data.real
 
     fig, ax = plt.subplots()
     ax.plot(X, real_data.real)
     ax.set(xlabel = "x", ylabel = "f(x)")
     fig.savefig(path + '/plots/2d_poles.svg')
+    
+    return complex_data, real_data
+
+def add_gaussian_noise(path, sigma):
+    """
+    Input path with data files and standard deviation for random Gaussian
+    noise
+    """
+    
+    data = np.loadtxt(path + '/output_data.txt')
+    noised_data = data + np.random.normal(0,sigma,data.size)
+    np.savetxt(path + '/noised_data.txt', noised_data)
+    return noised_data
