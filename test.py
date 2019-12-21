@@ -8,6 +8,7 @@ Created on Thu Dec 12 10:14:44 2019
 
 from rmm import rmm_plot
 from rmm import rmm_utils
+from rmm import vectfit
 import numpy as np
 import importlib
 #import matplotlib.pyplot as plt
@@ -30,3 +31,5 @@ Z,R = rmm_utils.generate_true_data(path,
 noised_data = rmm_utils.add_gaussian_noise(path, sigma)
 
 rmm_plot.plot_training_data(path)
+
+vectfit.vectfit_auto(real_data, X)
