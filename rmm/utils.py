@@ -5,6 +5,10 @@ def model(z,poles,residues,offset=0):
     mod = sum([residues[n]/(z-poles[n]) for n in range(len(poles))]) + offset
     return mod
 
+def model_real(z,poles,residues,offset=0):
+    mod = sum([(residues[2*n]+1j*residues[2*n+1])/(z-poles[n]) for n in range(len(poles))]) + offset
+    return mod
+
 def rational_function(z, poles, residues,offset=0):
     """
     Vectorize model function

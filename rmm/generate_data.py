@@ -51,10 +51,10 @@ def load_data(path):
     input to the rational function. 
     """
     X = np.loadtxt(path + '/X.txt')
-    data_1 = np.loadtxt(path + '/data_1.txt').view(complex)
-    data_2 = np.loadtxt(path + '/data_2.txt').view(complex)
-    true_value_1 = np.loadtxt(path + '/true_value_1.txt').view(complex)
-    true_value_2 = np.loadtxt(path + '/true_value_2.txt').view(complex)
+    data_1 = np.loadtxt(path + '/data_1.txt')
+    data_2 = np.loadtxt(path + '/data_2.txt')
+    true_value_1 = np.loadtxt(path + '/true_value_1.txt')
+    true_value_2 = np.loadtxt(path + '/true_value_2.txt')
     poles = np.loadtxt(path + '/poles.txt').view(complex)
     residues = np.loadtxt(path + '/residues.txt').view(complex)
               
