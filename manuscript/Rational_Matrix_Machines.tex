@@ -378,19 +378,19 @@ These iterations will converge to the $\mat{R_n}$, $\mat{C}$ and $r_n$ that mini
 \begin{IEEEeqnarraybox}[][c]{C}
     \gamma_{\mat{R_n}} \leq \frac{1}{2  \sum_{k=1}^{N_k} \frac{\rho_k}{\left| z_k -p_n^i\right|^2} + 2\frac{\mu}{\nabla(p_n)}} 
 \IEEEstrut\end{IEEEeqnarraybox}
-\label{theo:: Learning rate γ Rn}
+\label{theo:: Learning rate gamma Rn}
 \end{equation}
 \begin{equation}
 \begin{IEEEeqnarraybox}[][c]{C}
     \gamma_{\mat{C}} \leq \frac{1}{2  \sum_{k=1}^{N_k} \rho_k } = \frac{1}{2} 
 \IEEEstrut\end{IEEEeqnarraybox}
-\label{theo:: Learning rate γ C}
+\label{theo:: Learning rate gamma C}
 \end{equation}
 \begin{equation}
 \begin{IEEEeqnarraybox}[][c]{C}
     \gamma_{r_n} \leq \frac{1}{2 \, \mathrm{max}\Big\{\mathcal{S}_p \left( \sum_{k=1}^{N_k} \frac{\rho_k}{\left| z_k -p_n^i\right|^2} \mat{Y_k}^\dagger\mat{Y_k}\right)  \Big\}}
 \IEEEstrut\end{IEEEeqnarraybox}
-\label{theo:: Learning rate γ rn}
+\label{theo:: Learning rate gamma rn}
 \end{equation}
 
 One can initialize the iterations with the solutions to the direct least square system (\ref{problem:: rational approximation weighted least squares}), and then descend from there with initial $r_n = 0$.
