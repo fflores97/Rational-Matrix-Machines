@@ -448,7 +448,7 @@ Test all pole resolution parameter for optimal regularization:
       \Delta_n^5(p_n) & \triangleq & 1/ \sum_k \frac{\rho_k}{\left|z_k-p_n\right|^2} \\
       \Delta_n^6(p_n) & \triangleq & 1/ \sqrt{\sum_k \frac{\rho_k}{\left|z_k-p_n\right|^2}} \\
       \Delta_n^7(p_n) & \triangleq & 1/\Big( \frac{1}{\Re\left[p_n\right]} +\frac{1}{\Im\left[p_n\right]} \Big) \\ %= 1/\Big( \frac{2}{p_n + p_n^*} +  \frac{2\mathrm{i}}{p_n - p_n^*}\Big) \\
-      \Delta_n^8(p_n) & \triangleq & \sqrt{ \Delta_n^7(p_n)} \\
+      \Delta_n^8(p_n) & \triangleq &  1/\Big( \frac{1}{\Re\left[p_n\right]} +\frac{1}{\Im\left[p_n\right]} \Big)^2 \\
 \end{array} \right.
 \end{IEEEeqnarraybox}
 \label{problem:: Pole resolution}
@@ -520,6 +520,16 @@ Goal "ML algorithm learns nuclear physics".
 
 
 
+OBSERVATIONS:\\
+Vlad's function returns 2 times the number of poles and residues, all complex conjugate from one another. 
+To reproduce the Vlad functions, you can either take the Vlad poles and take the real part of our rational function, or learn a rational function with two times the number of poles Vlad gives us. 
+
+DELIVERABLES:\\
+\begin{itemize}
+    \item 1. first task is to benchmark the VF performance: in what range (of signal-to-noise ratio, points-per-pole, and resonance width) does it find the right poles?\\
+    To do this: generate many benchmarks from Vlad with different data quality parameters (i.e. signal-to-noise ratio, points-per-pole, and resonance width), for the entire study, we can set the number of poles to 10, it should not change anything to the overall results. 
+    \item 2. Only when we know where does VF in general find the right poles can we use those poles and filter out the superflous ones through RMM regularization. 
+\end{itemize}
 
 
 
