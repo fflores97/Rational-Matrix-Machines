@@ -1,3 +1,5 @@
+import os, sys, argparse
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from oct2py import Oct2Py
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,8 +25,6 @@ def generate_data(number_of_poles = 10, relative_width_of_poles = 1e-2,\
 
     return output
 
-<<<<<<< HEAD
-=======
 def save_data(path, X, data_1, data_2, true_value_1, true_value_2, poles, residues):
     """
     Function takes in a relative path and data objects and saves them to txt.
@@ -41,8 +41,10 @@ def save_data(path, X, data_1, data_2, true_value_1, true_value_2, poles, residu
     np.savetxt(path + '/X.txt', X.view(float))
     np.savetxt(path + '/poles.txt', poles.view(float))
     np.savetxt(path + '/residues.txt', residues.view(float))
-    np.savetxt(path + '/data_1.txt', data_1.view(float))
-    np.savetxt(path + '/data_2.txt', data_2.view(float))
+    np.savetxt(path + '/data_1.txt', data_1)
+    np.savetxt(path + '/data_2.txt', data_2)
+    # np.savetxt(path + '/data_1.txt', data_1.view(float))
+    # np.savetxt(path + '/data_2.txt', data_2.view(float))
     np.savetxt(path + '/true_value_1.txt', true_value_1.view(float))
     np.savetxt(path + '/true_value_2.txt', true_value_2.view(float))
 
@@ -88,6 +90,32 @@ def plot_data(X, data_1, data_2, true_value_1, true_value_2, poles, \
     plt.ylim([1e-5,1])
 
     if path != None:
-        plt.savefig(path + "/plots/plots.png")
+        plt.savefig(path + "/plots/generated_data.png")
 
->>>>>>> afac8e187acde366d25e50a5ecd30315fec14550
+def main(path,number_of_poles = 10, relative_width_of_poles = 1e-2,\
+                  number_points_per_pole = 100, signal_to_noise_ratio = 1e-3, seed = None):
+    # Generate Data
+    x, data_1, data_2, true_value_1, true_value_2, poles, residues = \
+        generate_data(number_of_poles, relative_width_of_poles,\
+            number_points_per_pole, signal_to_noise_ratio, seed)
+
+    # Save Data
+    save_data(path, x, data_1,\
+        data_2, true_value_1,true_value_2,poles,residues)
+
+    # Plot and save to path
+    plot_data(x, data_1,data_2,true_value_1,\
+        true_value_2,poles,residues, path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=\
+        "Provide path with data files")
+    parser.add_argument('path', help='Path to data files')
+    parser.add_argument('number_of_poles', help = 'default = 10', nargs='?', default = 10, type = int)
+    parser.add_argument('relative_width_of_poles', help = 'default = 1e-2',nargs='?',default = 1e-2, type=float)
+    parser.add_argument('number_points_per_pole', help = 'default = 100',nargs='?',default=100, type=int)
+    parser.add_argument('signal_to_noise_ratio', help = 'default = 1e-3',nargs='?',default=1e-3, type=float)
+    args = parser.parse_args()
+    print(args)
+    main(args.path, args.number_of_poles, args.relative_width_of_poles, 
+    args.number_points_per_pole,args.signal_to_noise_ratio)
