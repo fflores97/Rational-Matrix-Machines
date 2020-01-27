@@ -43,22 +43,21 @@ def rational_function(z, poles, residues,offset=0):
 #     np.savetxt(path + '/data_2.txt', data_2.view(float))
 #     np.savetxt(path + '/true_value_1.txt', true_value_1.view(float))
 #     np.savetxt(path + '/true_value_2.txt', true_value_2.view(float))
-
-# def load_data(path):
-#     """
-#     Function takes in a relative path and will scan for .txt files
-#     containing poles, residues, X and Y (real and imaginary parts)
-#     input to the rational function. 
-#     """
-#     X = np.loadtxt(path + '/X.txt')
-#     data_1 = np.loadtxt(path + '/data_1.txt').view(complex)
-#     data_2 = np.loadtxt(path + '/data_2.txt').view(complex)
-#     true_value_1 = np.loadtxt(path + '/true_value_1.txt').view(complex)
-#     true_value_2 = np.loadtxt(path + '/true_value_2.txt').view(complex)
-#     poles = np.loadtxt(path + '/poles.txt').view(complex)
-#     residues = np.loadtxt(path + '/residues.txt').view(complex)
+def load_data(path):
+     """
+     Function takes in a relative path and will scan for .txt files
+     containing poles, residues, X and Y (real and imaginary parts)
+     input to the rational function. 
+     """
+     X = np.loadtxt(path + '/X.txt')
+     data_1 = np.loadtxt(path + '/data_1.txt').view(complex)
+     data_2 = np.loadtxt(path + '/data_2.txt').view(complex)
+     true_value_1 = np.loadtxt(path + '/true_value_1.txt').view(complex)
+     true_value_2 = np.loadtxt(path + '/true_value_2.txt').view(complex)
+     poles = np.loadtxt(path + '/poles.txt').view(complex)
+     residues = np.loadtxt(path + '/residues.txt').view(complex)
               
-#     return [X, data_1, data_2, true_value_1, true_value_2, poles, residues]
+     return [X, data_1, data_2, true_value_1, true_value_2, poles, residues]
 
 # def plot_data(X, data_1, data_2, true_value_1, true_value_2, poles, \
 #               residues, path = None):
