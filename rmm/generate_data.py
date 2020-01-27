@@ -40,7 +40,8 @@ def save_data(path, X, data_1, data_2, true_value_1, true_value_2, poles, residu
 
     np.savetxt(path + '/X.txt', X.view(float))
     np.savetxt(path + '/poles.txt', poles.view(float))
-    np.savetxt(path + '/residues.txt', residues.view(float))
+    # print(residues.shape)
+    np.savetxt(path + '/residues.txt', residues.T.view(float))
     np.savetxt(path + '/data_1.txt', data_1)
     np.savetxt(path + '/data_2.txt', data_2)
     # np.savetxt(path + '/data_1.txt', data_1.view(float))
@@ -60,7 +61,7 @@ def load_data(path):
     true_value_1 = np.loadtxt(path + '/true_value_1.txt')
     true_value_2 = np.loadtxt(path + '/true_value_2.txt')
     poles = np.loadtxt(path + '/poles.txt').view(complex)
-    residues = np.loadtxt(path + '/residues.txt').view(complex)
+    residues = np.loadtxt(path + '/residues.txt').view(complex).T
               
     return [X, data_1, data_2, true_value_1, true_value_2, poles, residues]
 
@@ -98,7 +99,6 @@ def main(path,number_of_poles = 10, relative_width_of_poles = 1e-2,\
     x, data_1, data_2, true_value_1, true_value_2, poles, residues = \
         generate_data(number_of_poles, relative_width_of_poles,\
             number_points_per_pole, signal_to_noise_ratio, seed)
-
     # Save Data
     save_data(path, x, data_1,\
         data_2, true_value_1,true_value_2,poles,residues)
