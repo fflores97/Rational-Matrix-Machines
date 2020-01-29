@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """
 Functions used to build our in-house version of the VF algorithm
 """
@@ -6,10 +7,11 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
-import rmm
+from rmm import generate_data
+from rmm import utils
 
 def prepare_data(path):
-    z_train, Y_train, data_2, Y_true, true_value_2, true_poles, residues = rmm.generate_data.load_data(path)
+    z_train, Y_train, data_2, Y_true, true_value_2, true_poles, residues = generate_data.load_data(path)
     Y_train = Y_train.view('float')
     Y_true = Y_true.view('float')
     # z_train = x
@@ -183,14 +185,45 @@ def VF_algorithm(z_train, Y_train, number_VF_iteration, poly_order = 0 , *argume
         VF_residues , VF_poly_coeff, VF_offset = extract_from_LS_vector(LS_vector, learn_poles.size, dim_residues, poly_order)
         return learn_poles, VF_residues, VF_poly_coeff, VF_offset, LS_residual, barycentric_residues
 
-## Function that measures how well did the VF algorithm the true poles. 
-def VF_finds_true_poles_accuracy(true_poles, VF_poles):
-    performance = 0
-    for pole in true_poles:
-        performance += min([np.abs(pole-pole_vf) for pole_vf in VF_poles])
-    return performance/len(true_poles)
+## Function that measures the rate of missed poles: 1 = all poles missed 100% (i.e. either no poles to fit this true pole with, or fitted with zero a non-zero pole)
+def poles_missing_rate(true_poles, fit_poles):
+    miss = 0
+    remaining_poles = fit_poles
+    for true_pole in true_poles:
+        if remaining_poles.size > 0:
+            # find closest fit pole
+            closest_pole = remaining_poles[np.argmin([np.abs( (true_pole - pole)/true_pole ) for pole in remaining_poles ])]
+            # calculate how close (relatively) is the pole to the true poles
+            miss += np.abs( (true_pole - closest_pole)/true_pole ) 
+            # remove this pole the the remaining poles
+            remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
+        elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
+            miss += 1
+    return miss/len(true_poles)
 
-def main(path, iterations=30, poles=25):
+## Function that measures the rate of missed poles: 1 = all poles missed 100% (i.e. either no poles to fit this true pole with, or fitted with zero a non-zero pole)
+def poles_overfitting_rate(true_poles, fit_poles):
+    overfit = 0
+    remaining_poles = true_poles
+    for fit_pole in fit_poles:
+        if remaining_poles.size > 0:
+            # find closest true pole
+            closest_pole = remaining_poles[np.argmin([np.abs( (fit_pole - pole)/pole ) for pole in remaining_poles ])]
+            # calculate how close (relatively) is the fit pole to the true poles
+            overfit += np.abs( (fit_pole - closest_pole)/closest_pole ) 
+            # remove this pole the the remaining poles
+            remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
+        elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
+            overfit += 1
+    return overfit/len(fit_poles)
+
+## Function that measures the rate of finding all the poles, no more, no less (it gives 1 (100%) if all the poles are found exactly, and zero if all the poles are missed or all the poles are overfitted 100%)
+def poles_finding_rate(true_poles, fit_poles):
+    overfitting_rate = poles_overfitting_rate(true_poles, fit_poles)
+    missing_rate = poles_missing_rate(true_poles, fit_poles)
+    return 1 - max(missing_rate , overfitting_rate)
+
+def main(path, figurepath = '/plots/VF.png', iterations=30, poles=25):
 
     z_train, Y_train, Y_true, true_poles, true_residues, \
         true_offset, number_true_poles, number_train_points = prepare_data(path)
@@ -201,13 +234,13 @@ def main(path, iterations=30, poles=25):
     dim_residues = Y_train[0].size
     Y_VF = np.zeros([z_train.size, dim_residues] , dtype=complex) ## VF solution
     for k in range(z_train.size):
-        Y_VF[k] = rmm.utils.rational_function_at_z(z_train[k], VF_poles, VF_residues, VF_offset) # add when poly_order not zero : VF_poly_coeff)
+        Y_VF[k] = utils.rational_function_at_z(z_train[k], VF_poles, VF_residues, VF_offset) # add when poly_order not zero : VF_poly_coeff)
     
-    accuracy = VF_finds_true_poles_accuracy(true_poles, VF_poles)
+    PFR = poles_finding_rate(true_poles, VF_poles)
     np.savetxt(path + '/VF_Y.txt', Y_VF.view(float))
     np.savetxt(path + '/VF_poles.txt', VF_poles.view(float))
     np.savetxt(path + '/VF_residues.txt', VF_residual.view(float))
-    np.savetxt(path + '/VF_accuracy.txt', [accuracy])
+    np.savetxt(path + '/VF_PFR.txt', [PFR])
 
 
     fig_train_vs_VF, ax = plt.subplots()
@@ -222,17 +255,20 @@ def main(path, iterations=30, poles=25):
     plt.title(plot_title)
     plt.legend()
     #plt.show()
-    plt.text(0.8, 0.1,'Accuracy = ' + str(round(accuracy,5)), horizontalalignment='center',\
+    plt.text(0.8, 0.1,'PFR = ' + str(round(PFR,5)), horizontalalignment='center',\
         verticalalignment='center', transform=ax.transAxes)
 
     plt.rcParams['axes.facecolor'] = '0.98'
-    plt.savefig(path + "/plots/VF.png")
+    plt.savefig(path + figurepath)
+
+    return PFR
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=\
         "Provide path with data files")
     parser.add_argument('path', help='path to data files')
-    parser.add_argument('iterations', help='Number of iterations')
-    parser.add_argument('poles', help='Number of poles')
+    parser.add_argument('figurepath', help = 'Name of figure file. Default =  /plots/VF.png', nargs='?', default = '/plots/VF.png')
+    parser.add_argument('iterations', help = 'Number of iterations. Default = 30', nargs='?', default = 30, type = int)
+    parser.add_argument('poles', help = 'Number of poles. Default = 25', nargs='?', default = 25, type = int)
     args = parser.parse_args()
-    main(args.path, args.iterations, args.poles)
+    main(args.path, figurepath = args.figurepath, iterations = args.iterations, poles = args.poles)

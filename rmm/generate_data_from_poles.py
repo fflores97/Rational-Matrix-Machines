@@ -41,8 +41,6 @@ def main(path, path2, relative_width_of_poles = 1e-2,\
     generate_data.save_data(path2, x, data_1,\
         data_2, true_value_1,true_value_2,poles,residues)
 
-    print(data_2.shape)
-    print(true_value_2.shape)
     # Plot and save to path
     generate_data.plot_data(x, data_1,data_2,true_value_1,\
         true_value_2,poles,residues, path2)
