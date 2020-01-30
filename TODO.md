@@ -21,3 +21,7 @@ $$\left( \sum_{n+1}^{N} \frac{c_n}{s - a_n} +d +sh \right)-\left( \sum_{n-1}^N \
 * Add regularizer to VectFit
     * Decide on optimizer
 * Code new one-step solution, including pole finding and regularizer filtering in one Least-Squares step
+
+# TODO (2020/01/05)
+
+* 

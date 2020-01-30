@@ -22,6 +22,7 @@ def generate_data_with_poles(poles, residues, relative_width_of_poles = 1e-2,\
                 number_points_per_pole, signal_to_noise_ratio, nout = 5)
 
     for i, value in enumerate(output):
+        # value = np.array(value)
         output[i] = value.reshape(len(value),)
 
     return output

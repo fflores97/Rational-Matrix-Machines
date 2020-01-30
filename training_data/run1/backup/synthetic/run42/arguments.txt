@@ -1,0 +1,4 @@
+Poles	10
+Width	0.01
+Points per pole	12
+Signal to noise ratio	0.01061578947368421

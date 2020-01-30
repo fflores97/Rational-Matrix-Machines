@@ -2,3 +2,4 @@ octave-workspace
 rmm/__pycache__
 benchmarks/
 .git-old
+training_data/run1/synthetic
