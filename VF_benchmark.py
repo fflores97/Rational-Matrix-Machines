@@ -9,17 +9,17 @@ import matplotlib.pyplot as plt
 importlib.reload(VF)
 importlib.reload(generate_data_from_poles)
 
-master_path = 'training_data/run8'
+master_path = 'training_data/run10'
 
 # poles = [10, 15]
 # widths = [1e-3]
-# points = [6]
-# ratios = [1e-3]
+points = [6]
+ratios = [1e-3]
 
-poles = [10]
+poles = [16]
 widths = [1e-2]
-points = np.arange(2,100,5)
-ratios = np.linspace(1e-4,1e-1,20)
+# points = np.arange(2,100,5)
+# ratios = np.linspace(1e-4,1e-1,20)
 
 iterable = product(poles, widths, points, ratios)
 
@@ -35,7 +35,7 @@ def generate_benchmark(iterable, master_path):
 
         path = master_path + "/synthetic/run" + str(i)
         generate_data_from_poles.main(master_path, path, point[1], point[2], point[3])
-        pfr1, pfr2 = VF.main(path, figurepath = '/../../plots/VF' + str(i) + '.png', iterations=30, poles = point[0])
+        pfr1, pfr2 = VF.main(path, figurepath1 = '/../../plots/VF_resonance_' + str(i) + '.png', figurepath2 = '/../../plots/VF_scattering_' + str(i) + '.png', iterations=30, poles = point[0])
         PFR1.append(pfr1)
         PFR2.append(pfr2)
 

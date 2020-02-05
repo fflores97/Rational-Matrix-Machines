@@ -33,6 +33,9 @@ def main(path, path2, relative_width_of_poles = 1e-2,\
 
     x, data_1, data_2, true_value_1, true_value_2, poles, residues = generate_data.load_data(path)
     
+    poles = np.append(poles, poles.conj())
+    residues = 0.5*np.vstack([residues, residues.conj()])
+
     # Generate Data
     x, data_1, data_2, true_value_1, true_value_2 = \
         generate_data_with_poles(poles, residues, relative_width_of_poles,\

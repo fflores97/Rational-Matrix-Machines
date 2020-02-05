@@ -305,8 +305,8 @@ def VF_run_and_plot(path, z_train, Y_train, Y_true, true_poles, true_residues, i
 
     fig_train_vs_VF, ax = plt.subplots()
     plt.plot(z_train, Y_train, 'x k', label='Y_train' )
-    plt.plot(z_train, Y_VF, 'b', label='Y_VF')
     plt.plot(z_train, Y_true, 'r', label='Y_true')
+    plt.plot(z_train, Y_VF, '--b', label='Y_VF')
 
     #plt.ylim(-20,20)
     plt.xlabel('z')
