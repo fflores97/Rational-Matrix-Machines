@@ -11,14 +11,19 @@ from rmm import generate_data
 from rmm import utils
 
 def prepare_data(path):
-    z_train, Y_train, data_2, Y_true, true_value_2, true_poles, residues = generate_data.load_data(path)
-    Y_train = Y_train.view('float')
-    Y_true = Y_true.view('float')
-    # z_train = x
-    # Y_train = data_1
-    Y_train = Y_train.reshape((len(Y_train),1))
-    # Y_true = true_value_1
-    Y_true = Y_true.reshape((len(Y_true),1))
+    z_train, Y_train_1, Y_train_2, Y_true_1, Y_true_2, true_poles, residues = generate_data.load_data(path)
+
+
+    Y_train_1 = Y_train_1.view('float')
+    Y_train_1 = Y_train_1.reshape((len(Y_train_1),1))
+    Y_train_2 = Y_train_2.view('float')
+    Y_train_2 = Y_train_2.reshape((len(Y_train_2),1))
+
+    Y_true_1 = Y_true_1.view('float')
+    Y_true_1 = Y_true_1.reshape((len(Y_true_1),1))
+    Y_true_2 = Y_true_2.view('float')
+    Y_true_2 = Y_true_2.reshape((len(Y_true_2),1))
+
     # true_poles = poles
     true_residues = residues[:,0].reshape((len(residues),1))
     true_offset = np.array([1])
@@ -26,7 +31,7 @@ def prepare_data(path):
     number_train_points = len(z_train)
     
 
-    return z_train, Y_train, Y_true, true_poles, true_residues, true_offset, number_true_poles, number_train_points
+    return z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, true_offset, number_true_poles, number_train_points
 
 
 
@@ -186,47 +191,102 @@ def VF_algorithm(z_train, Y_train, number_VF_iteration, poly_order = 0 , *argume
         return learn_poles, VF_residues, VF_poly_coeff, VF_offset, LS_residual, barycentric_residues
 
 ## Function that measures the rate of missed poles: 1 = all poles missed 100% (i.e. either no poles to fit this true pole with, or fitted with zero a non-zero pole)
-def poles_missing_rate(true_poles, fit_poles):
+# def poles_missing_rate(true_poles, fit_poles):
+#     miss = 0
+#     remaining_poles = fit_poles
+#     min_distances = np.zeros(true_poles.shape)
+#     for i,true_pole in enumerate(true_poles):
+#         distances = np.abs(fit_poles - true_pole)
+#         min_distance = np.min(distances)
+#         min_distances[i] = min_distance
+
+#     sorted_distances_index = np.argsort(min_distances)
+#     sorted_true_poles = true_poles[sorted_distances_index]
+
+#     for ii, true_pole in enumerate(sorted_true_poles):
+#         if remaining_poles.size > 0:
+#             # find closest fit pole
+#             closest_pole = remaining_poles[np.argmin([np.abs( (true_pole - pole)/true_pole ) for pole in remaining_poles ])]
+#             # calculate how close (relatively) is the pole to the true poles
+#             miss += np.min([1,np.abs( (true_pole - closest_pole)/true_pole)])
+#             # remove this pole the the remaining poles
+#             remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
+#         elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
+#             miss += 1
+#     return miss/len(true_poles)
+
+# ## Function that measures the rate of missed poles: 1 = all poles missed 100% (i.e. either no poles to fit this true pole with, or fitted with zero a non-zero pole)
+# def poles_overfitting_rate(true_poles, fit_poles):
+#     overfit = 0
+#     # remaining_poles = true_poles
+#     # min_distances = np.zeros(fit_poles.shape)
+#     # for i,fit_pole in enumerate(fit_poles):
+#     #     distances = np.abs(fit_pole - true_poles)
+#     #     min_distance = np.min(distances)
+#     #     min_distances[i] = min_distance
+
+#     # sorted_distances_index = np.argsort(min_distances)
+#     # sorted_fit_poles = fit_poles[sorted_distances_index]
+#     min_distances = np.zeros(true_poles.shape)
+#     for i,true_pole in enumerate(true_poles):
+#         distances = np.abs(fit_poles - true_pole)
+#         min_distance = np.min(distances)
+#         min_distances[i] = min_distance
+
+#     sorted_distances_index = np.argsort(min_distances)
+#     sorted_true_poles = true_poles[sorted_distances_index]
+#     remaining_poles = sorted_true_poles
+
+#     for fit_pole in fit_poles:
+#         if remaining_poles.size > 0:
+#             # find closest true pole
+#             closest_index = np.argmin([np.abs( (fit_pole - pole)/pole ) for pole in remaining_poles ])
+#             closest_pole = remaining_poles[closest_index]
+#             # calculate how close (relatively) is the fit pole to the true poles
+#             # overfit += np.abs( (fit_pole - closest_pole)/closest_pole ) 
+#             overfit += np.min([1,np.abs( (fit_pole - closest_pole)/closest_pole)])
+#             # remove this pole the the remaining poles
+#             remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
+#         elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
+#             overfit += 1
+#     return overfit/len(fit_poles)
+
+# ## Function that measures the rate of finding all the poles, no more, no less (it gives 1 (100%) if all the poles are found exactly, and zero if all the poles are missed or all the poles are overfitted 100%)
+# def poles_finding_rate(true_poles, fit_poles):
+#     overfitting_rate = poles_overfitting_rate(true_poles, fit_poles)
+#     missing_rate = poles_missing_rate(true_poles, fit_poles)
+#     return 1 - max(missing_rate , overfitting_rate)
+
+
+def poles_finding_rate(true_poles, fit_poles):
     miss = 0
     remaining_poles = fit_poles
-    for true_pole in true_poles:
+    min_distances = np.zeros(true_poles.shape)
+    for i,true_pole in enumerate(true_poles):
+        distances = np.abs(fit_poles - true_pole)
+        min_distance = np.min(distances)
+        min_distances[i] = min_distance
+
+    sorted_distances_index = np.argsort(min_distances)
+    sorted_true_poles = true_poles[sorted_distances_index]
+
+    for ii, true_pole in enumerate(sorted_true_poles):
         if remaining_poles.size > 0:
             # find closest fit pole
             closest_pole = remaining_poles[np.argmin([np.abs( (true_pole - pole)/true_pole ) for pole in remaining_poles ])]
             # calculate how close (relatively) is the pole to the true poles
-            miss += np.abs( (true_pole - closest_pole)/true_pole ) 
+            miss += np.min([1,np.abs( (true_pole - closest_pole)/true_pole)])
             # remove this pole the the remaining poles
             remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
         elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
             miss += 1
-    return miss/len(true_poles)
+    miss += remaining_poles.size
+    return 1-miss/max(len(true_poles),len(fit_poles))
 
-## Function that measures the rate of missed poles: 1 = all poles missed 100% (i.e. either no poles to fit this true pole with, or fitted with zero a non-zero pole)
-def poles_overfitting_rate(true_poles, fit_poles):
-    overfit = 0
-    remaining_poles = true_poles
-    for fit_pole in fit_poles:
-        if remaining_poles.size > 0:
-            # find closest true pole
-            closest_pole = remaining_poles[np.argmin([np.abs( (fit_pole - pole)/pole ) for pole in remaining_poles ])]
-            # calculate how close (relatively) is the fit pole to the true poles
-            overfit += np.abs( (fit_pole - closest_pole)/closest_pole ) 
-            # remove this pole the the remaining poles
-            remaining_poles = remaining_poles[ [element != closest_pole for element in remaining_poles] ]
-        elif remaining_poles.size == 0: #not enought fiting poles for the number of true poles
-            overfit += 1
-    return overfit/len(fit_poles)
+def VF_run_and_plot(path, z_train, Y_train, Y_true, true_poles, true_residues, iterations=30, poles=25):
 
-## Function that measures the rate of finding all the poles, no more, no less (it gives 1 (100%) if all the poles are found exactly, and zero if all the poles are missed or all the poles are overfitted 100%)
-def poles_finding_rate(true_poles, fit_poles):
-    overfitting_rate = poles_overfitting_rate(true_poles, fit_poles)
-    missing_rate = poles_missing_rate(true_poles, fit_poles)
-    return 1 - max(missing_rate , overfitting_rate)
-
-def main(path, figurepath = '/plots/VF.png', iterations=30, poles=25):
-
-    z_train, Y_train, Y_true, true_poles, true_residues, \
-        true_offset, number_true_poles, number_train_points = prepare_data(path)
+    # z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, \
+    #     true_offset, number_true_poles, number_train_points = prepare_data(path)
     
     VF_poles, VF_residues, VF_poly_coeff, VF_offset, VF_residual, \
         barycentric_residues = VF_algorithm(z_train, Y_train, iterations, 0, poles)
@@ -259,9 +319,30 @@ def main(path, figurepath = '/plots/VF.png', iterations=30, poles=25):
         verticalalignment='center', transform=ax.transAxes)
 
     plt.rcParams['axes.facecolor'] = '0.98'
-    plt.savefig(path + figurepath)
+    
 
     return PFR
+
+def main(path, figurepath1 = '/plots/VF_1.pdf', figurepath2 = '/plots/VF_2.pdf',iterations=30, poles=25):
+    z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, \
+    true_offset, number_true_poles, number_train_points = prepare_data(path)
+
+    try:
+        os.makedirs(path + '/../../graph1')
+        os.makedirs(path + '/../../graph2')
+        print('Directories created; saving data')
+    except FileExistsError:
+        print('Directories exist; saving data')
+    
+    PFR1 = VF_run_and_plot(path + '/../../graph1' , z_train, Y_train_1, Y_true_1, true_poles, true_residues, iterations, poles)
+    plt.savefig(path + figurepath1)
+
+    PFR2 = VF_run_and_plot(path + '/../../graph2' , z_train, Y_train_2, Y_true_2, true_poles, true_residues, iterations, poles)
+    plt.savefig(path + figurepath2)
+
+    return PFR1, PFR2
+
+    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=\
