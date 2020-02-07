@@ -7,7 +7,7 @@ function [x, data_1,data_2,true_value_1,true_value_2,vector_of_poles,vector_of_r
 % relative_width_of_poles = 1e-2; % ratio of average pole width to average level spacing 
 % number_points_per_pole = 1e2;  
 % signal_to_noise_ratio = 1e-3;
-  
+
   %% Average Resonance Parameters
   
   average_level_spacing  = 2/(number_of_poles/2);
