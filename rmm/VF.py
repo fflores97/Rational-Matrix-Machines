@@ -273,7 +273,7 @@ def poles_finding_rate(true_poles, fit_poles):
     for ii, true_pole in enumerate(sorted_true_poles):
         if remaining_poles.size > 0:
             # find closest fit pole
-            distance_to_next_true_pole = np.min(np.abs( [ true_pole - sorted_true_poles[element != true_pole for element in sorted_true_poles] ] ) )
+            distance_to_next_true_pole = np.min(np.abs( true_pole - sorted_true_poles[[element != true_pole for element in sorted_true_poles]] ) )
             closest_pole = remaining_poles[np.argmin([np.abs( 2*(true_pole - pole)/distance_to_next_true_pole ) for pole in remaining_poles ])]
             # calculate how close (relatively) is the pole to the true poles
             miss += np.min([1,np.abs( (true_pole - closest_pole)/true_pole)])

@@ -13,7 +13,7 @@ master_path = 'training_data/paper_run'
 
 PFR = []
 pole_numbers = np.arange(4,35,3).tolist()
-pole_numbers.append(20)
+# pole_numbers.append(20)
 
 z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, \
     true_offset, number_true_poles, number_train_points = VF.prepare_data(master_path)

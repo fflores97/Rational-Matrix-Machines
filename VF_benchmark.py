@@ -9,19 +9,7 @@ import matplotlib.pyplot as plt
 importlib.reload(VF)
 importlib.reload(generate_data_from_poles)
 
-master_path = 'training_data/run10'
 
-# poles = [10, 15]
-# widths = [1e-3]
-points = [6]
-ratios = [1e-3]
-
-poles = [16]
-widths = [1e-2]
-# points = np.arange(2,100,5)
-# ratios = np.linspace(1e-4,1e-1,20)
-
-iterable = product(poles, widths, points, ratios)
 
 def generate_benchmark(iterable, master_path):
     PFR1= []
@@ -48,9 +36,9 @@ def generate_benchmark(iterable, master_path):
 
     tuples_file.close()
     PFR_array_1 = np.array(PFR1)
-    np.savetxt(master_path + '/PFRs_1.txt', PFR_array_1)
+    np.savetxt(master_path + '/PFRs_0.txt', PFR_array_1)
     PFR_array_2 = np.array(PFR2)
-    np.savetxt(master_path + '/PFRs_2.txt', PFR_array_2)
+    np.savetxt(master_path + '/PFRs_1.txt', PFR_array_2)
 
 def plot_contour(master_path, points, ratios):
     for i in range(1):
@@ -69,26 +57,40 @@ def plot_contour(master_path, points, ratios):
         plt.savefig(master_path + "/plots/benchmark_VF" + str(i)+ ".pdf")
 
 # %%
+master_path = 'training_data/run12'
+
+# poles = [10, 15]
+# widths = [1e-3]
+# points = [10]
+# ratios = [1e-4]
+
+poles = [16]
+widths = [1e-2]
+points = np.arange(2,100,5)
+ratios = np.linspace(1e-4,1e-1,20)
+
+iterable = product(poles, widths, points, ratios)
+
 generate_benchmark(iterable, master_path)
 #%%
 plot_contour(master_path, points, ratios)
 
 # %%
-importlib.reload(VF)
-master_path = 'training_data/run8'
-VF.main(master_path + '/synthetic/run270',figurepath1 = '/../../plots/RMM_test_benchmark_1.pdf',figurepath2 = '/../../plots/RMM_test_benchmark_2.pdf',poles=10)
+# importlib.reload(VF)
+# master_path = 'training_data/run8'
+# VF.main(master_path + '/synthetic/run270',figurepath1 = '/../../plots/RMM_test_benchmark_1.pdf',figurepath2 = '/../../plots/RMM_test_benchmark_2.pdf',poles=10)
 
 
-# %%
+# # %%
 
-z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, \
-true_offset, number_true_poles, number_train_points = VF.prepare_data(master_path + '/synthetic/run270')
+# z_train, Y_train_1, Y_true_1, Y_train_2, Y_true_2, true_poles, true_residues, \
+# true_offset, number_true_poles, number_train_points = VF.prepare_data(master_path + '/synthetic/run270')
 
-VF.VF_run_and_plot('training_data/test_matrix', z_train, np.hstack([Y_train_1, Y_train_2]), np.hstack([Y_true_1, Y_true_2]), true_poles, true_residues, poles =10)
-# %%
-np.hstack([Y_train_1, Y_train_2])[0]
+# VF.VF_run_and_plot('training_data/test_matrix', z_train, np.hstack([Y_train_1, Y_train_2]), np.hstack([Y_true_1, Y_true_2]), true_poles, true_residues, poles =10)
+# # %%
+# np.hstack([Y_train_1, Y_train_2])[0]
 
-# %%
-Y_train_2[0]
+# # %%
+# Y_train_2[0]
 
 # %%
